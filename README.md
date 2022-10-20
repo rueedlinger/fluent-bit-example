@@ -1,12 +1,25 @@
 # Example: Log Collector with Fluent Bit
-Start all services with docker compose.
+To play around with you have to start all services with docker compose.
 
 ```
 docker compose up
 ```
 
-Services:
-- 
+## Services: (Mapped Docker Ports)
+
+- Fluent Bit
+    - HTTP INPUT (http://localhost:8888)
+    - Health, Metrics, etc. (http://localhost:8080)
+- Elasticsearch (http://localhost:9200)
+- Kafka UI (http://localhost:8082)
+
+## Fluent Bit configurtaion:
+
+Fluent Bit HTTP INPUT (http://localhost:8888)
+    - OUTPUT Kafka -> tag = kafka.* 
+    - OUTPUT Elasticsearch -> tag = es.*
+    - OUTPUT stdout -> tag = stdout.*
+
 
 
 ## Collect Events with Fluent Bit
