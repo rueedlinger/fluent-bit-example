@@ -71,6 +71,10 @@ services:
   fluent-bit:
     image: fluent/fluent-bit:1.9.9
     hostname: fluent-bit
+    environment:
+      ES_HOST: elasticsearch
+      ES_PORT: 9200
+      KAFKA_BROKER: broker:9092
     ports:
       - "8080:8080"
       - "8888:8888"
