@@ -1,0 +1,26 @@
+[
+    {
+        "id": 100, 
+        "reference": null,
+        "quantity":1, 
+        "complete": true,
+        "log_message_key": "my-key-1", 
+        "log_topic_key": "log-events-a"
+    },
+    {
+        "id": 101, 
+        "reference": null,
+        "quantity": 2, 
+        "complete": false,
+        "log_message_key": "my-key-2", 
+        "log_topic_key": "log-events-b"
+    },
+    {
+        "id": 102, 
+        "reference": null,
+        "quantity": 2, 
+        "complete": false,
+        "log_message_key": "my-key-3", 
+        "log_topic_key": "unknown"
+    }
+]

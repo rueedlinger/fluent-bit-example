@@ -1,0 +1,81 @@
+version: "3.9"
+
+services:
+
+  ################################
+  # elasticsearch
+  ################################
+  elasticsearch:
+      image: elasticsearch:8.4.3
+      hostname: elasticsearch
+      environment:
+        - xpack.security.enabled=false
+        - discovery.type=single-node
+        - ingest.geoip.downloader.enabled=false
+        - cluster.routing.allocation.disk.watermark.low=2gb
+        - cluster.routing.allocation.disk.watermark.high=1gb
+        - cluster.routing.allocation.disk.watermark.flood_stage=512mb
+      ports:
+        - '9200:9200'
+
+  ################################
+  # Kafak
+  ################################
+  zookeeper:
+      image: quay.io/strimzi/kafka:0.31.1-kafka-3.1.2
+      hostname: zookeeper
+      command: [
+        "sh", "-c",
+        "bin/zookeeper-server-start.sh config/zookeeper.properties"
+      ]
+      ports:
+        - "2181:2181"
+      environment:
+        LOG_DIR: /tmp/logs
+
+  broker:
+    image: quay.io/strimzi/kafka:0.31.1-kafka-3.1.2
+    hostname: broker
+    command: [
+      "sh", "-c",
+      "bin/kafka-server-start.sh config/server.properties --override listeners=$${KAFKA_LISTENERS} --override advertised.listeners=$${KAFKA_ADVERTISED_LISTENERS} --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT} --override listener.security.protocol.map=$${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP} --override inter.broker.listener.name=$${KAFKA_INTER_BROKER_LISTENER_NAME}"
+    ]
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    environment:
+      LOG_DIR: "/tmp/logs"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://broker:9092,OUTSIDE://localhost:29092
+      KAFKA_LISTENERS: INSIDE://broker:9092,OUTSIDE://broker:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.4.0
+    hostname: kafka-ui
+    depends_on:
+      - broker
+    ports:
+      - "8082:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: "kafka"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "broker:9092"
+      KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181"
+
+
+  ################################
+  # Fluent Bit
+  ################################
+  fluent-bit:
+    image: fluent/fluent-bit:1.9.9
+    hostname: fluent-bit
+    ports:
+      - "8080:8080"
+      - "8888:8888"
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    depends_on:
+      - elasticsearch
+      - broker
