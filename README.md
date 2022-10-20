@@ -16,11 +16,9 @@ docker compose up
 ## Fluent Bit configurtaion:
 
 Fluent Bit HTTP INPUT (http://localhost:8888)
-    - OUTPUT Kafka -> tag = kafka.* 
-    - OUTPUT Elasticsearch -> tag = es.*
-    - OUTPUT stdout -> tag = stdout.*
-
-
+- OUTPUT Kafka -> tag = kafka.* 
+- OUTPUT Elasticsearch -> tag = es.*
+- OUTPUT stdout -> tag = stdout.*
 
 ## Collect Events with Fluent Bit
 
