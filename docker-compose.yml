@@ -64,6 +64,24 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "broker:9092"
       KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181"
 
+  ################################
+  # PostgreSQL
+  ################################
+  postgres:
+    image: postgres:14.5
+    hostname: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=fluentbit
+      - POSTGRES_USER=fluentbit
+      - POSTGRES_PASSWORD=fluentbit
+    logging:
+      options:
+        max-size: 10m
+        max-file: 3
+    ports:
+      - '5432:5432'
+
 
   ################################
   # Fluent Bit
@@ -71,10 +89,16 @@ services:
   fluent-bit:
     image: fluent/fluent-bit:1.9.9
     hostname: fluent-bit
+    restart: always
     environment:
       ES_HOST: elasticsearch
       ES_PORT: 9200
       KAFKA_BROKER: broker:9092
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: fluentbit
+      PG_PASSWORD: fluentbit
+      PG_DATABASE: fluentbit
     ports:
       - "8080:8080"
       - "8888:8888"
@@ -83,3 +107,4 @@ services:
     depends_on:
       - elasticsearch
       - broker
+      - postgres

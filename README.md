@@ -1,5 +1,5 @@
-# Example: Log Collector with Fluent Bit
-To play around with you have to start all services with docker compose.
+# Log Collector with Fluent Bit
+To play around with this example you have to start all services with docker compose.
 
 ```
 docker compose up
@@ -11,6 +11,7 @@ docker compose up
     - HTTP INPUT (http://localhost:8888)
     - Health, Metrics, etc. (http://localhost:8080)
 - Elasticsearch (http://localhost:9200)
+- PostgreSQL, localhost:5432
 - Kafka UI (http://localhost:8082)
 
 ## Fluent Bit configurtaion:
@@ -38,4 +39,9 @@ The following will log to elasticsearch, you can checkout out the entries in ela
 
 ```
 curl -d @logs/events.json -XPOST -H "content-type: application/json" http://localhost:8888/es.log
+```
+
+This will publish the events in a PostreSQL database.
+```
+curl -d @logs/events.json -XPOST -H "content-type: application/json" http://localhost:8888/pgsql.log
 ```
